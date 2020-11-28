@@ -1,0 +1,72 @@
+//if input = (1) Display Vending Machine Items 
+//import & read (scan?) inventory file
+//can this go in Product Class?
+//from https://www.netjstech.com/2016/06/reading-delimited-file-in-java-using-scanner.html
+public class ScanDelimited {
+
+public static void main (String[] args) {
+File file = new File ("path:fileName.txt");
+Scanner scan = null;
+try(
+scan = new Scanner(file);
+//Check if there is another line of input
+while (scan.hasNextLine()){
+String str = scan.nextLine();
+parseLine(str);
+}
+}catch (IOException exp) {
+//TODO Auto-generated catch block  Don't know what this means
+exp.printStackTrace();
+}
+scan.close();
+
+private static void parseLine(String str) {
+String slotLocation, name, price, type;
+Scanner scan = new Scanner (str);
+scan.useDelimiter("[|]");
+
+//Check if there is another line of input
+while(scan.hasNext()) {
+slotLocation = scan.next();
+name = scan.next();
+price = scan.next();
+type = scan.next();
+}
+scan.close();
+}
+}
+
+
+
+create private inventory map<String slotLocation, String Product name, Double price>
+set quantities at max of 5 at every start
+when quantity = 0, sout "SOLD OUT"
+
+if input = (2) Purchase
+ArrayList<String>purchaseOptions = new ArrayList<>();
+purchaseOptions.add("(1) Feed Money");
+purchaseOptions.add("(2) Select Product");
+purchaseOptions.add("(3) Finish Transaction");
+
+if input = (1) Feed Money
+int moneyFed = scan.next() test for valid 1, 2, 5, 10
+int currentMoneyIn += moneyFed
+append Log.txt date, time, FEED MONEY: moneyFed currentMoneyIn
+
+
+if input = (2) Select Product
+String productChoice = scan.next() test for valid slot ID
+if (int quantity = 0) sout "SOLD OUT"
+if (int quantity > 0) create a method called dispense that 
+	append Log.txt date, time, name, slotID, currentMoneyIn, currentMoneyIn-price
+	currentMoneyIn -= price; quantity--; sout name, price, currentMoneyIn, message
+
+if input = (3) Finish Transaction
+sout "Your change is " + currentMoneyIn;
+append Lot.txt date, time, GIVE CHANGE	currentMoneyIn, 0
+currentMoneyIn = 0;
+
+return to Main menu
+
+
+
