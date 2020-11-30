@@ -2,3 +2,4 @@ A1|Doublemint|0.75|Gum
 A2|Coke|1.00|Drinks
 A3|Popcorn|1.25|Chips
 A4|Snickers|2.00|Candy
+A5|Hersheys|2.50|Candy

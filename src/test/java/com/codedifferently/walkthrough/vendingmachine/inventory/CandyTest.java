@@ -3,8 +3,11 @@ package com.codedifferently.walkthrough.vendingmachine.inventory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.text.DecimalFormat;
+
 
 public class CandyTest {
+
 
 
     @Test
@@ -13,7 +16,6 @@ public class CandyTest {
         // Given
         String name = "Dove Dark Chocolate";
         Double price = 1.00;
-      //  DecimalFormat df2 = new DecimalFormat("#.##");
         Candy candyRef = new Candy("Dove Dark Chocolate", price);
 
         // When

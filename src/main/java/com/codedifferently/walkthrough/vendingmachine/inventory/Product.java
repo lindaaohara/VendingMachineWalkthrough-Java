@@ -1,4 +1,7 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
+
+import java.text.DecimalFormat;
+
 //setting up an abstract class called Product because we have a number of different products
 //that will be similar in the way we want to handle them.
 public abstract class Product {
@@ -7,7 +10,6 @@ public abstract class Product {
     private String name;
     private Double price;
     protected String msg;
-
 
 //this is the public definition of a Product; explicitly initializing the variables which
 //otherwise could not be used since they were marked private above
@@ -34,4 +36,6 @@ public abstract class Product {
     }
 
     public abstract String message();
+
+
 }
