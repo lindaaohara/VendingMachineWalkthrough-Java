@@ -13,10 +13,10 @@ import java.util.Scanner;
 public class VendingMachine {
     private Scanner scan;
     private Map<String, ArrayList<Product>> inventory;
-    public int quantity = 5;
-    public Double balance = 0.0;
+    private int quantity = 5;
+    private Double balance = 0.0;
 
-    public Double getBalance(){
+    public Double getBalance() {
         return balance;
     }
 
@@ -26,7 +26,7 @@ public class VendingMachine {
         this.init();
     }
 
-    public void init(){
+    public void init() {
         try {
             String output = readRawDataToString();
             String[] products = output.split("\n");
@@ -35,7 +35,8 @@ public class VendingMachine {
             e.printStackTrace();
         }
     }
-    private ArrayList<Product> makeProductFromString(String[] productData){
+
+    private ArrayList<Product> makeProductFromString(String[] productData) {
         Product product = null;
         String type = productData[3];
         type = type.trim();
@@ -43,26 +44,26 @@ public class VendingMachine {
         String name = productData[1];
         Double price = Double.valueOf(productData[2]);
         ArrayList<Product> listOfProduct = new ArrayList<>();
-        switch(type){
+        switch (type) {
             case "Candy":
-                for(int i = 0;  i < quantity; i++){
-                    listOfProduct.add(new Candy(name,price));
+                for (int i = 0; i < quantity; i++) {
+                    listOfProduct.add(new Candy(name, price));
                 }
 
                 break;
             case "Drinks":
-                for(int i = 0;  i < quantity; i++){
-                    listOfProduct.add(new Drinks(name,price));
+                for (int i = 0; i < quantity; i++) {
+                    listOfProduct.add(new Drinks(name, price));
                 }
                 break;
             case "Chips":
-                for(int i = 0;  i < quantity; i++){
-                    listOfProduct.add(new Chips(name,price));
+                for (int i = 0; i < quantity; i++) {
+                    listOfProduct.add(new Chips(name, price));
                 }
                 break;
             case "Gum":
-                for(int i = 0;  i < quantity; i++){
-                    listOfProduct.add(new Gum(name,price));
+                for (int i = 0; i < quantity; i++) {
+                    listOfProduct.add(new Gum(name, price));
                 }
                 break;
             default:
@@ -72,8 +73,8 @@ public class VendingMachine {
         return listOfProduct;
     }
 
-    public void stockVendingMachine(String[] products){
-        for (String product : products){
+    public void stockVendingMachine(String[] products) {
+        for (String product : products) {
             String[] productData = product.split("\\|");
             String key = productData[0];
             ArrayList item = makeProductFromString(productData);
@@ -81,12 +82,14 @@ public class VendingMachine {
             inventory.put(key, item);
         }
     }
-    private String readRawDataToString() throws Exception{
+
+    private String readRawDataToString() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         String result = IOUtils.toString(classLoader.getResourceAsStream("inventory.txt"));
         return result;
 
     }
+
     public void start() {
         init();
         System.out.println("Welcome to the Vending Machine");
@@ -96,33 +99,28 @@ public class VendingMachine {
         options.add("(2) Purchase");
         options.add("(3) Exit");
         Menu menu = new Menu(options);
-        while(flag){
-            for(String option : menu.getOptions()){
+        while (flag) {
+            for (String option : menu.getOptions()) {
                 System.out.println(option);
             }
             String input = scan.next();
 
-            if(input.equals("3")){
+            if (input.equals("3")) {
                 flag = false;
                 System.out.println("Goodbye");
 
-            } else if(input.equals("1")){
+            } else if (input.equals("1")) {
                 System.out.println(getInventoryAsString());
-            } else if (input.equals("2")){
-                System.out.println("What would you like to purchase?");
-                String slotLocation = scan.next();
-                Product purchasedProduct = deliverItem(slotLocation);
-                System.out.println("You purchased " + purchasedProduct.getName() +
-                        "\n Your remaining balance is " + balance);
-            }
-
-            else System.out.println("Try again");
+            } else if (input.equals("2")) {
+                purchase();
+            } else System.out.println("Try again");
 
         }
         scan.close();
 
     }
-    public Map<String, ArrayList<Product>> getInventory(){
+
+    public Map<String, ArrayList<Product>> getInventory() {
         return this.inventory;
     }
 
@@ -131,23 +129,16 @@ public class VendingMachine {
         vendingMachine.start();
     }
 
-    public void feedMoney(Double amountToAdd){
-        if (amountToAdd == 1.0 || amountToAdd == 2.0 || amountToAdd == 5.0
-                || amountToAdd ==10.0) {
-            balance += amountToAdd;
-        }else {
-            System.out.println("You have entered an invalid amount");
-        }
-    }
+    // public void feedMoney(Double amountToAdd){
 
-    public Product deliverItem(String slotLocation){
+
+    public Product deliverItem(String slotLocation) {
         ArrayList<Product> products = inventory.get(slotLocation);
         Product productToBePurchased = products.remove(0);
-        if(balance > productToBePurchased.getPrice()){
+        if (balance > productToBePurchased.getPrice()) {
             balance -= productToBePurchased.getPrice();
             return productToBePurchased;
-        }
-        else {
+        } else {
             // THROW EXCEPTION HANDLE IT IN VENT METHOD
             return null;
         }
@@ -155,7 +146,7 @@ public class VendingMachine {
     }
 
 
-    public Double giveChange(){
+    public Double giveChange() {
         Double changeToGive = balance;
         balance = 0.0;
         return changeToGive;
@@ -166,9 +157,9 @@ public class VendingMachine {
         this.balance = balance;
     }
 
-    public String getInventoryAsString(){
+    public String getInventoryAsString() {
         StringBuilder inventoryAsString = new StringBuilder();
-        for(Map.Entry<String, ArrayList<Product>> products: inventory.entrySet()){
+        for (Map.Entry<String, ArrayList<Product>> products : inventory.entrySet()) {
             inventoryAsString.append(products.getKey());
             inventoryAsString.append(" : ");
             inventoryAsString.append(products.getValue().get(0).toString());
@@ -180,5 +171,48 @@ public class VendingMachine {
         return inventoryAsString.toString();
     }
 
+    public void purchase() {
+        boolean flag = true;
+        Menu menu = new Menu(getPurchaseOptions());
+        while (flag) {
+            for (String purchaseOption : menu.getOptions()) {
+                System.out.println(purchaseOption);
+            }
+            String purchaseInput = scan.next();
+
+            if (purchaseInput.equals("3")) {
+                flag = false;
+                System.out.println(giveChange());
+            } else if (purchaseInput.equals("1")) {
+                System.out.println("Enter your money: 1 or 2 or 5 or 10");
+                int amountToAdd = scan.nextInt();
+                this.feedMoney(amountToAdd);
+            } else if (purchaseInput.equals("2")) {
+                System.out.println("What would you like to purchase?  Enter the Slot Location");
+                String slotLocation = scan.next().toUpperCase();
+                Product purchasedProduct = deliverItem(slotLocation);
+                System.out.println("You purchased " + purchasedProduct.getName() +
+                        "\n Your remaining balance is " + balance);
+            }
+        }
+    }
+
+    public ArrayList<String> getPurchaseOptions(){
+        ArrayList<String> purchaseOptions = new ArrayList<>();
+        purchaseOptions.add("(1) Feed Money");
+        purchaseOptions.add("(2) Select Product");
+        purchaseOptions.add("(3) Finish Transaction");
+        return purchaseOptions;
+    }
+
+
+    public void feedMoney(int amountToAdd) {
+
+        if (amountToAdd == 1.0 || amountToAdd == 2.0 || amountToAdd == 5.0 || amountToAdd == 10.0) {
+            balance += amountToAdd;
+        } else {
+            System.out.println("You have entered an invalid amount.  Try Again.");
+        }
+    }
 
 }
