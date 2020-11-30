@@ -16,9 +16,7 @@ public class VendingMachine {
     private int quantity = 5;
     private Double balance = 0.0;
 
-    public Double getBalance() {
-        return balance;
-    }
+
 
     public VendingMachine() {
         this.scan = new Scanner(System.in);
@@ -35,7 +33,12 @@ public class VendingMachine {
             e.printStackTrace();
         }
     }
+    private String readRawDataToString() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        String result = IOUtils.toString(classLoader.getResourceAsStream("inventory.txt"));
+        return result;
 
+    }
     private ArrayList<Product> makeProductFromString(String[] productData) {
         Product product = null;
         String type = productData[3];
@@ -83,22 +86,42 @@ public class VendingMachine {
         }
     }
 
-    private String readRawDataToString() throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        String result = IOUtils.toString(classLoader.getResourceAsStream("inventory.txt"));
-        return result;
+    public Map<String, ArrayList<Product>> getInventory() {
+        return this.inventory;
+    }
 
+    public String getInventoryAsString() {
+        StringBuilder inventoryAsString = new StringBuilder();
+        for (Map.Entry<String, ArrayList<Product>> products : inventory.entrySet()) {
+            inventoryAsString.append(products.getKey());
+            inventoryAsString.append(" : ");
+            inventoryAsString.append(products.getValue().get(0).toString());
+            inventoryAsString.append(" : Quantity ");
+            inventoryAsString.append(products.getValue().size());
+
+            inventoryAsString.append("\n");
+        }
+        return inventoryAsString.toString();
+    }
+
+    public static void main(String[] args) {
+        VendingMachine vendingMachine = new VendingMachine();
+        vendingMachine.start();
+    }
+
+    public ArrayList<String> getOptions(){
+        ArrayList<String> options = new ArrayList<>();
+        options.add("(1) Display Vending Machine Items");
+        options.add("(2) Purchase");
+        options.add("(3) Exit");
+        return options;
     }
 
     public void start() {
         init();
         System.out.println("Welcome to the Vending Machine");
         boolean flag = true;
-        ArrayList<String> options = new ArrayList<>();
-        options.add("(1) Display Vending Machine Items");
-        options.add("(2) Purchase");
-        options.add("(3) Exit");
-        Menu menu = new Menu(options);
+        Menu menu = new Menu(getOptions());
         while (flag) {
             for (String option : menu.getOptions()) {
                 System.out.println(option);
@@ -120,56 +143,24 @@ public class VendingMachine {
 
     }
 
-    public Map<String, ArrayList<Product>> getInventory() {
-        return this.inventory;
-    }
-
-    public static void main(String[] args) {
-        VendingMachine vendingMachine = new VendingMachine();
-        vendingMachine.start();
-    }
-
-    // public void feedMoney(Double amountToAdd){
-
-
-    public Product deliverItem(String slotLocation) {
-        ArrayList<Product> products = inventory.get(slotLocation);
-        Product productToBePurchased = products.remove(0);
-        if (balance > productToBePurchased.getPrice()) {
-            balance -= productToBePurchased.getPrice();
-            return productToBePurchased;
-        } else {
-            // THROW EXCEPTION HANDLE IT IN VENT METHOD
-            return null;
-        }
-
-    }
-
-
-    public Double giveChange() {
-        Double changeToGive = balance;
-        balance = 0.0;
-        return changeToGive;
-
-    }
-
     public void setBalance(Double balance) {
         this.balance = balance;
     }
 
-    public String getInventoryAsString() {
-        StringBuilder inventoryAsString = new StringBuilder();
-        for (Map.Entry<String, ArrayList<Product>> products : inventory.entrySet()) {
-            inventoryAsString.append(products.getKey());
-            inventoryAsString.append(" : ");
-            inventoryAsString.append(products.getValue().get(0).toString());
-            inventoryAsString.append(" : Quantity ");
-            inventoryAsString.append(products.getValue().size());
-
-            inventoryAsString.append("\n");
-        }
-        return inventoryAsString.toString();
+    public Double getBalance() {
+        return balance;
     }
+
+
+
+    public ArrayList<String> getPurchaseOptions(){
+        ArrayList<String> purchaseOptions = new ArrayList<>();
+        purchaseOptions.add("(1) Feed Money");
+        purchaseOptions.add("(2) Select Product");
+        purchaseOptions.add("(3) Finish Transaction");
+        return purchaseOptions;
+    }
+
 
     public void purchase() {
         boolean flag = true;
@@ -190,29 +181,52 @@ public class VendingMachine {
             } else if (purchaseInput.equals("2")) {
                 System.out.println("What would you like to purchase?  Enter the Slot Location");
                 String slotLocation = scan.next().toUpperCase();
-                Product purchasedProduct = deliverItem(slotLocation);
-                System.out.println("You purchased " + purchasedProduct.getName() +
-                        "\n Your remaining balance is " + balance);
+               try {
+                    Product purchasedProduct = deliverItem(slotLocation);
+                    System.out.println("You purchased " + purchasedProduct.getName() +
+                            "\n Your remaining balance is " + balance);
+                } catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+
             }
         }
+        scan.close();
     }
 
-    public ArrayList<String> getPurchaseOptions(){
-        ArrayList<String> purchaseOptions = new ArrayList<>();
-        purchaseOptions.add("(1) Feed Money");
-        purchaseOptions.add("(2) Select Product");
-        purchaseOptions.add("(3) Finish Transaction");
-        return purchaseOptions;
-    }
-
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     public void feedMoney(int amountToAdd) {
-
         if (amountToAdd == 1.0 || amountToAdd == 2.0 || amountToAdd == 5.0 || amountToAdd == 10.0) {
             balance += amountToAdd;
         } else {
-            System.out.println("You have entered an invalid amount.  Try Again.");
+            System.out.println(ANSI_RED + "You have entered an invalid amount.  Try Again." + ANSI_RESET);
         }
     }
 
+    public Product deliverItem(String slotLocation) {
+        ArrayList<Product> products = inventory.get(slotLocation);
+        Product productToBePurchased = products.size() > 0 ? products.remove(0) : null;
+
+        if (productToBePurchased != null && balance > productToBePurchased.getPrice()) {
+            balance -= productToBePurchased.getPrice();
+            return productToBePurchased;
+        } else if(productToBePurchased == null) {
+        throw new IllegalArgumentException(ANSI_RED + "THIS ITEM IS SOLD OUT"+ ANSI_RESET);
+
+        }else {
+             throw new IllegalArgumentException(ANSI_RED+ "You don't have enough money for that"+ ANSI_RESET);
+
+        }
+
+    }
+
+    public Double giveChange() {
+        Double changeToGive = balance;
+        balance = 0.0;
+        System.out.println(("Here is your change: "));
+        return changeToGive;
+
+    }
 }
