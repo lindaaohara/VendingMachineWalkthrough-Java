@@ -162,6 +162,32 @@ public class VendingMachine {
     }
 
 
+    //helper method 
+    public String extractMsg(String slotLocation ){
+       
+
+        ArrayList<Product> products = inventory.get(slotLocation);
+        Product p = products.get(0);
+        String[] pParts = p.split("\\|");
+        
+         //Classes we need
+        switch (pParts[2]){
+            case "Gum":
+                Gum g = new Gum(pParts[0], pParts[1]);
+                return g.message();
+
+            case "Candy":
+                Candy c = new Candy(pParts[0], pParts[1]);
+                return c.message();
+            case "Drinks":
+                Drinks d = new Drinks(pParts[0], pParts[1]);
+                return d.message();
+            case "Chips":
+                Chips chip = new Chips(pParts[0], pParts[1]);
+                return chip.message();
+        }
+    }
+
     public Double purchase() {
         boolean flag = true;
         Menu menu = new Menu(getPurchaseOptions());
@@ -183,8 +209,8 @@ public class VendingMachine {
                 String slotLocation = scan.next().toUpperCase();
                try {
                     Product purchasedProduct = deliverItem(slotLocation);
-                    System.out.println("You purchased " + purchasedProduct.getName()  +
-                            "\n Your remaining balance is " + balance);
+                    System.out.println("You purchased " + purchasedProduct.getName()  + " " + extractMsg(slotLocation)+
+                            "\n Your remaining balance is " + balance );
                 } catch (Exception e){
                     System.out.println(ANSI_RED + "You have entered an invalid Slot Location.  Try Again." + ANSI_RESET);
                     System.out.println(getInventoryAsString());
