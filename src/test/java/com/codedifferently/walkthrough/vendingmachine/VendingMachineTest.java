@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -67,6 +69,36 @@ public class VendingMachineTest {
                 "A5 : Hersheys 2.5 : Quantity 5\n",
                 new VendingMachine().getInventoryAsString());
     }
+
+    @Test
+    public void purchaseTestOption3(){
+        String input = "3";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+        VendingMachine vendingMachine = new VendingMachine();
+
+        vendingMachine.purchase();
+        Double expected = 0.0;
+        Double actual = vendingMachine.giveChange();
+
+        Assert.assertEquals(expected, actual);
+
+    }
+    @Test
+    public void purchaseTest(){
+        String input = "1 5 2 a1 3";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+        VendingMachine vendingMachine = new VendingMachine();
+        Double balance = 5.0;
+        vendingMachine.setBalance(balance);
+
+        Double actual = vendingMachine.purchase();
+        Double expected = 9.25;
+
+        Assert.assertEquals(expected, actual);
+    }
+
     public static void main(String[] args) {
         logger.info("Start");
     }

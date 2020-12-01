@@ -139,7 +139,7 @@ public class VendingMachine {
             } else System.out.println("Try again");
 
         }
-        scan.close();
+
 
     }
 
@@ -162,7 +162,7 @@ public class VendingMachine {
     }
 
 
-    public void purchase() {
+    public Double purchase() {
         boolean flag = true;
         Menu menu = new Menu(getPurchaseOptions());
         while (flag) {
@@ -173,7 +173,7 @@ public class VendingMachine {
 
             if (purchaseInput.equals("3")) {
                 flag = false;
-                System.out.println(giveChange());
+                System.out.println("Goodbye");
             } else if (purchaseInput.equals("1")) {
                 System.out.println("Enter your money: 1 or 2 or 5 or 10");
                 int amountToAdd = scan.nextInt();
@@ -183,15 +183,17 @@ public class VendingMachine {
                 String slotLocation = scan.next().toUpperCase();
                try {
                     Product purchasedProduct = deliverItem(slotLocation);
-                    System.out.println("You purchased " + purchasedProduct.getName() +
+                    System.out.println("You purchased " + purchasedProduct.getName()  +
                             "\n Your remaining balance is " + balance);
                 } catch (Exception e){
-                    System.out.println(e.getMessage());
+                    System.out.println(ANSI_RED + "You have entered an invalid Slot Location.  Try Again." + ANSI_RESET);
+                    System.out.println(getInventoryAsString());
                 }
 
             }
         }
-        scan.close();
+
+            return giveChange();
     }
 
     public static final String ANSI_RED = "\u001B[31m";
@@ -200,6 +202,7 @@ public class VendingMachine {
     public void feedMoney(int amountToAdd) {
         if (amountToAdd == 1.0 || amountToAdd == 2.0 || amountToAdd == 5.0 || amountToAdd == 10.0) {
             balance += amountToAdd;
+            System.out.println("You have currently provided " + balance);
         } else {
             System.out.println(ANSI_RED + "You have entered an invalid amount.  Try Again." + ANSI_RESET);
         }
@@ -225,7 +228,7 @@ public class VendingMachine {
     public Double giveChange() {
         Double changeToGive = balance;
         balance = 0.0;
-        System.out.println(("Here is your change: "));
+        System.out.println(("Here is your change: "+ changeToGive));
         return changeToGive;
 
     }
