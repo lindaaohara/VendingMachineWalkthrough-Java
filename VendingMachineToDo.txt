@@ -2,6 +2,8 @@
 //import & read (scan?) inventory file
 //can this go in Product Class?
 //from https://www.netjstech.com/2016/06/reading-delimited-file-in-java-using-scanner.html
+/* don't need this as Tariq provided a ClassLoader method
+
 public class ScanDelimited {
 
 public static void main (String[] args) {
@@ -35,6 +37,7 @@ type = scan.next();
 scan.close();
 }
 }
+*/
 
 
 
